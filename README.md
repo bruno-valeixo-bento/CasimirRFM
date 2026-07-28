@@ -6,7 +6,7 @@
 - computing invariant metrics, cohomology forms, and compatible spin structures;
 - evaluating lattice sums efficiently using Ewald summation;
 - computing Casimir potentials and local Casimir energy densities;
-- evaluating group-element traces in the graviton, differential-form, spinor, and Rarita–Schwinger representations.
+- evaluating group-element traces in the graviton, p-form, spinor, and Rarita–Schwinger representations.
 
 The repository contains the package file `CasimirRFM.wl`, a template notebook with examples for all functions `CasimirRFM-Template.nb`, and detailed documentation `CasimirRFM.pdf`.
 
