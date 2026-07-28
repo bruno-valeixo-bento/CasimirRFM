@@ -1,6 +1,6 @@
 # CasimirRFM
 
-**CasimirRFM** is a Mathematica (Wolfram Language) package for studying of compactifications on Riemann-flat manifolds (RFMs) and computating one-loop Casimir energies in higher-dimensional field theories and supergravity models. The package provides tools for:
+**CasimirRFM** is a Mathematica (Wolfram Language) package for studying of compactifications on Riemann-flat manifolds (RFMs) and computating one-loop Casimir energies in higher-dimensional field theories and supergravity. The package provides tools for:
 
 - constructing and analysing finite groups defining Riemann-flat manifolds;
 - computing invariant metrics, cohomology forms, and compatible spin structures;
