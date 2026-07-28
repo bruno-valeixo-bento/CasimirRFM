@@ -46,8 +46,10 @@ BeginPackage["CasimirRFM`"];
 	Ewald::usage = "Ewald[c,h,s,\[Alpha],G,\[Epsilon]] numerically computes the lattice sum \!\(\*UnderscriptBox[\"\[Sum]\", RowBox[{OverscriptBox[StyleBox[\"n\", \"TI\"], \"\[RightVector]\"], \"\[Element]\", StyleBox[\"Z\", FontSlant->\"Plain\"]}]]\) \!\(\*FractionBox[SuperscriptBox[StyleBox[\"e\", \"TI\"], RowBox[{\"2\", \"\[Pi]\", StyleBox[\"i\", \"TI\"], \" \", OverscriptBox[StyleBox[\"h\", \"TI\"], \"\[RightVector]\"], \"\[CenterDot]\", OverscriptBox[StyleBox[\"n\", \"TI\"], \"\[RightVector]\"]}]], RowBox[{\"|\", OverscriptBox[StyleBox[\"n\", \"TI\"], \"\[RightVector]\"], \"+\", OverscriptBox[StyleBox[\"c\", \"TI\"], \"\[RightVector]\"], SubsuperscriptBox[\"|\", StyleBox[\"G\", \"TI\"], RowBox[{\"2\", StyleBox[\"s\", \"TI\"]}]]}]]\); \!\(\*StyleBox[\"\[Epsilon]\", \"TI\"]\) controls the estimated truncation of the numerical sums such that \!\(\*StyleBox[\"\[Epsilon]\", \"TI\"] = \*SuperscriptBox[10,\(-p\)]\) targets roughly \!\(\*StyleBox[\"p\", \"TI\"]\) decimal digits. The parameter \[Alpha] controls the split between the real and reciprocal sums in the Ewald summation method.";
 	ReducedLatticeSum::usage = "ReducedLatticeSum[\[DoubleStruckCapitalD],g,h,G,\[Epsilon]] computes the lattice sum numerically, projecting onto the g-invariant lattice, i.e. collapsing the sum to the lowest dimension possible, before numerically summing using the Ewald summation method. The lattice sum corresponds (up to a numerical factor) to the contribution to the D-dimensional Casimir potential of element g on a background with metric G and fermion boundary conditions \!\(\*OverscriptBox[\(h\), \(\[RightArrow]\)]\) = {\!\(\*SubscriptBox[\(h\), \(1\)]\),...,\!\(\*SubscriptBox[\(h\), \(k\)]\)}; \!\(\*StyleBox[\"\[Epsilon]\", \"TI\"]\) controls the estimated truncation of the numerical sums such that \!\(\*StyleBox[\"\[Epsilon]\", \"TI\"] = \*SuperscriptBox[10,\(-p\)]\) targets roughly \!\(\*StyleBox[\"p\", \"TI\"]\) decimal digits (\!\(\*StyleBox[\"\[Epsilon]\", \"TI\"] = \*SuperscriptBox[10,\(-4\)]\) by default).";
 	ReducedLatticeSum::metric = "The compactification metric must be real, symmetric, and positive definite.";
+	ReducedLatticeSum::hvec = "The dimension of the phase vector h must match the dimension k of the compact space.";
 	TracedSum::usage="TracedSum[\[DoubleStruckCapitalD],g,spectrum,h,G,\[Phi],\[Epsilon]] computes the lattice sum numerically, summing over all representations in the spectrum taking into account the appropriate traces of element g.  \[FilledSquare] \[DoubleStruckCapitalD] = dimension of theory;  \[FilledSquare] \!\(\*StyleBox[\"spectrum\",FontWeight->\"Bold\"]\) = {bosons,fermions} (see documentation for details on spectrum syntax); \[FilledSquare] \!\(\*StyleBox[\"h\",FontWeight->\"Bold\"]\) = {\!\(\*SubscriptBox[\(h\), \(1\)]\),...,\!\(\*SubscriptBox[\(h\), \(k\)]\)} = spin structure/default fermion boundary conditions; \!\(\*SubscriptBox[\(h\), \(i\)] = 0\) for periodic boundary conditions around direction i, \!\(\*SubscriptBox[\(h\), \(i\)]\) = \!\(\*FractionBox[\(1\), \(2\)]\) for anti-periodic;  \[FilledSquare] \!\(\*StyleBox[\"G\",FontWeight->\"Bold\"]\) = metric on the compact space; generally a function of the moduli G(\!\(\*SubscriptBox[\(c\), \(1\)]\),...,\!\(\*SubscriptBox[\(c\), \(m\)]\));  \[FilledSquare] \!\(\*StyleBox[\"\[Phi]\",FontWeight->\"Bold\"]\) = {\!\(\*SubscriptBox[\(c\), \(i\)]\) \[RightArrow] \!\(\*SubscriptBox[OverscriptBox[\(c\), \(_\)], \(i\)]\)} = moduli values given as replacement rule (point in moduli space where the sum is evaluated numerically);  \[FilledSquare] \!\(\*StyleBox[\"\[Epsilon]\", \"TI\"]\) controls the estimated truncation of the numerical sums such that \!\(\*StyleBox[\"\[Epsilon]\", \"TI\"] = \*SuperscriptBox[10,\(-p\)]\) targets roughly \!\(\*StyleBox[\"p\", \"TI\"]\) decimal digits (\!\(\*StyleBox[\"\[Epsilon]\", \"TI\"] = \*SuperscriptBox[10,\(-4\)]\) by default).";
 	TracedSum::metric = "The compactification metric must be real, symmetric, and positive definite.";
+	TracedSum::hvec = "The dimension of the phase vector h must match the dimension k of the compact space.";
 	
 	(* CASIMIR POTENTIAL FUNCTIONS *)
 	CasimirPotential::usage = "CasimirPotential[\[DoubleStruckCapitalD],\[CapitalGamma],spectrum,h,G,\!\(\*SubscriptBox[\(\[Phi]\), \(0\)]\),\[Epsilon]] computes the Casimir potential \!\(\*SubscriptBox[\(V\), \(Cas\)]\)(\!\(\*SubscriptBox[\(\[Phi]\), \(0\)]\)) summing over all elements \[Gamma] \[Element] \[CapitalGamma], all lattice sums, including traces over all representations in the \!\(\*StyleBox[\"spectrum\",\nFontSlant->\"Italic\"]\), and the appropriate numerical factors for each element, with default fermion boundary conditions given by the spin structure vector \!\(\*OverscriptBox[\(h\), \(\[Rule]\)] = {\*SubscriptBox[h, 1],...,\*SubscriptBox[h, k]}\) and evaluated at the point \!\(\*SubscriptBox[\(\[Phi]\), \(0\)]\) in moduli space given as the replacement rule {\!\(\*SubscriptBox[\(\[Phi]\), \(i\)]\) \[Rule] \!\(\*SubscriptBox[OverscriptBox[\(\[Phi]\), \(_\)], \(i\)]\)}; \!\(\*StyleBox[\"\[Epsilon]\", \"TI\"]\) controls the estimated truncation of the numerical sums such that \!\(\*StyleBox[\"\[Epsilon]\", \"TI\"] = \*SuperscriptBox[10,\(-p\)]\) targets roughly \!\(\*StyleBox[\"p\", \"TI\"]\) decimal digits (\!\(\*StyleBox[\"\[Epsilon]\", \"TI\"] = \*SuperscriptBox[10,\(-4\)]\) by default).";
@@ -476,7 +478,7 @@ Begin["`Private`"]
 		CompilationTarget->"C",RuntimeOptions->"Speed"];
 		
 	Clear[Ewald];
-	Ewald[c0_?VectorQ,h0_?VectorQ,s0_?NumericQ,alpha0_?NumericQ,G0_?MatrixQ,\[Epsilon]_?NumericQ]:=Block[{k=Length[c0],rmaxn,rmaxk,Ginv,detG,normG,normGdual,deltaTerm,offsetTerm,points,pointsk,tot,sumvec,vecN,isum,
+	Ewald[c0_?VectorQ,h0_?VectorQ,s0_?NumericQ,alpha0_?NumericQ,G0_?MatrixQ,\[Epsilon]:(_?NumericQ):10^-4]:=Block[{k=Length[c0],rmaxn,rmaxk,Ginv,detG,normG,normGdual,deltaTerm,offsetTerm,points,pointsk,tot,sumvec,vecN,isum,
 		(* Make everything floating point -- $MachinePrecision *)
 		vecs,rminn,rmink,
 		c=N[c0],s=N[s0],h=N[h0],G=N[G0,10],alpha=N[alpha0],pi=N[Pi],Ne},
@@ -515,6 +517,10 @@ Begin["`Private`"]
 			Message[ReducedLatticeSum::metric];
 			Return[$Failed];
 		];
+		If[Length[hvec]!=k,
+			Message[ReducedLatticeSum::hvec];
+			Return[$Failed];
+		];
 
 		\[Alpha]=N[\[Pi](Det[G]^(-1/k))];
 		
@@ -548,6 +554,11 @@ Begin["`Private`"]
 			Message[TracedSum::metric];
 			Return[$Failed];
 		];
+		If[Length[hvec]!=k,
+			Message[TracedSum::hvec];
+			Return[$Failed];
+		];
+		
 		If[AssociationQ[spectrum],
 			(*Association*)
 			If[Lookup[spectrum,"Bosons",{}]!={},
