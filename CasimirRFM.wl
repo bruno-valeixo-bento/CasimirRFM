@@ -50,6 +50,8 @@ BeginPackage["CasimirRFM`"];
 	TracedSum::usage="TracedSum[\[DoubleStruckCapitalD],g,spectrum,h,G,\[Phi],\[Epsilon]] computes the lattice sum numerically, summing over all representations in the spectrum taking into account the appropriate traces of element g.  \[FilledSquare] \[DoubleStruckCapitalD] = dimension of theory;  \[FilledSquare] \!\(\*StyleBox[\"spectrum\",FontWeight->\"Bold\"]\) = {bosons,fermions} (see documentation for details on spectrum syntax); \[FilledSquare] \!\(\*StyleBox[\"h\",FontWeight->\"Bold\"]\) = {\!\(\*SubscriptBox[\(h\), \(1\)]\),...,\!\(\*SubscriptBox[\(h\), \(k\)]\)} = spin structure/default fermion boundary conditions; \!\(\*SubscriptBox[\(h\), \(i\)] = 0\) for periodic boundary conditions around direction i, \!\(\*SubscriptBox[\(h\), \(i\)]\) = \!\(\*FractionBox[\(1\), \(2\)]\) for anti-periodic;  \[FilledSquare] \!\(\*StyleBox[\"G\",FontWeight->\"Bold\"]\) = metric on the compact space; generally a function of the moduli G(\!\(\*SubscriptBox[\(c\), \(1\)]\),...,\!\(\*SubscriptBox[\(c\), \(m\)]\));  \[FilledSquare] \!\(\*StyleBox[\"\[Phi]\",FontWeight->\"Bold\"]\) = {\!\(\*SubscriptBox[\(c\), \(i\)]\) \[RightArrow] \!\(\*SubscriptBox[OverscriptBox[\(c\), \(_\)], \(i\)]\)} = moduli values given as replacement rule (point in moduli space where the sum is evaluated numerically);  \[FilledSquare] \!\(\*StyleBox[\"\[Epsilon]\", \"TI\"]\) controls the estimated truncation of the numerical sums such that \!\(\*StyleBox[\"\[Epsilon]\", \"TI\"] = \*SuperscriptBox[10,\(-p\)]\) targets roughly \!\(\*StyleBox[\"p\", \"TI\"]\) decimal digits (\!\(\*StyleBox[\"\[Epsilon]\", \"TI\"] = \*SuperscriptBox[10,\(-4\)]\) by default).";
 	TracedSum::metric = "The compactification metric must be real, symmetric, and positive definite.";
 	TracedSum::hvec = "The dimension of the phase vector h must match the dimension k of the compact space.";
+	$MaxEwaldLatticeCache::usage = "Maximum memory to use in saving lattices for Ewald summation (in MB, default 500MB).";
+	$MaxEwaldLatticeCache = 1000;
 	
 	(* CASIMIR POTENTIAL FUNCTIONS *)
 	CasimirPotential::usage = "CasimirPotential[\[DoubleStruckCapitalD],\[CapitalGamma],spectrum,h,G,\!\(\*SubscriptBox[\(\[Phi]\), \(0\)]\),\[Epsilon]] computes the Casimir potential \!\(\*SubscriptBox[\(V\), \(Cas\)]\)(\!\(\*SubscriptBox[\(\[Phi]\), \(0\)]\)) summing over all elements \[Gamma] \[Element] \[CapitalGamma], all lattice sums, including traces over all representations in the \!\(\*StyleBox[\"spectrum\",\nFontSlant->\"Italic\"]\), and the appropriate numerical factors for each element, with default fermion boundary conditions given by the spin structure vector \!\(\*OverscriptBox[\(h\), \(\[Rule]\)] = {\*SubscriptBox[h, 1],...,\*SubscriptBox[h, k]}\) and evaluated at the point \!\(\*SubscriptBox[\(\[Phi]\), \(0\)]\) in moduli space given as the replacement rule {\!\(\*SubscriptBox[\(\[Phi]\), \(i\)]\) \[Rule] \!\(\*SubscriptBox[OverscriptBox[\(\[Phi]\), \(_\)], \(i\)]\)}; \!\(\*StyleBox[\"\[Epsilon]\", \"TI\"]\) controls the estimated truncation of the numerical sums such that \!\(\*StyleBox[\"\[Epsilon]\", \"TI\"] = \*SuperscriptBox[10,\(-p\)]\) targets roughly \!\(\*StyleBox[\"p\", \"TI\"]\) decimal digits (\!\(\*StyleBox[\"\[Epsilon]\", \"TI\"] = \*SuperscriptBox[10,\(-4\)]\) by default).";
@@ -146,11 +148,11 @@ Begin["`Private`"]
 		];
 		newgroup={Q . #[[1]] . Inverse[Q], Q . #[[2]] + q - (Q . #[[1]] . Inverse[Q]) . q//Mod[#,1]&}&/@oldgroup;
 		check=(Sort[newgroup]==Sort[oldgroup]);
-		If[check==True,
-			Return[check],
-			If[Sort[(#[[1]]&/@newgroup)]==Sort[(#[[1]]&/@oldgroup)],Return["True for point group only."],
-			False]
-		];
+		If[check,check,
+			If[Sort[(#[[1]]&/@newgroup)]==Sort[(#[[1]]&/@oldgroup)],
+				Return["True for point group only."],
+				False]
+		]
 	];
 	
 	Clear[CasimirBranes];
@@ -409,9 +411,14 @@ Begin["`Private`"]
 	(**)
 	(**)(* LATTICE SUMS FUNCTIONS  *)
 	(**)
+	$LatticeCacheSize = 0;
 	Clear[GetEwaldLatticeByNorm];
-	GetEwaldLatticeByNorm[r2w_,Gw_,bw_]:=GetEwaldLatticeByNorm[r2w,Gw,bw]=Block[{d=Length[Gw],r2=N[r2w],G=N[Gw],b=N[bw],s,nrange,r2new,Gnew,bnew,result},
-			
+	GetEwaldLatticeByNorm[r2w_,Gw_,bw_]:=GetEwaldLatticeByNorm[r2w,Gw,bw]=Block[{d=Length[Gw],r2=N[r2w],G=N[Gw],b=N[bw],s,nrange,r2new,Gnew,bnew,result,lattice},
+		If[$LatticeCacheSize > $MaxEwaldLatticeCache 2.^20,
+			DownValues[GetEwaldLatticeByNorm] = Last@DownValues[GetEwaldLatticeByNorm]
+		];
+		(*Print[ByteCount[DownValues[GetEwaldLatticeByNorm]]/2.^20];*)
+		
 		(*If the remaining budget is negative (even slightly, from round-off), there are no lattice points here*)
 		If[r2 < 10^-8, Return[{}]];
 		
@@ -426,7 +433,9 @@ Begin["`Private`"]
 		r2new[n_]:=(r2-(n+b[[1]])^2 (G[[1,1]]-G[[1,2;;]] . Inverse[G[[2;;,2;;]]] . G[[1,2;;]]));
 		
 		result={#,GetEwaldLatticeByNorm[r2new[#],Gnew,bnew[#]]}&/@nrange; (* For each n, determine remaining coordinates recursively *)
-		Return[Table[Flatten@{#[[1]],#[[2,i]]},{i,Length[#[[2]]]}]&/@result//Flatten[#,1]&]; 
+		lattice = Table[Flatten@{#[[1]],#[[2,i]]},{i,Length[#[[2]]]}]&/@result//Flatten[#,1]&;
+		$LatticeCacheSize += ByteCount[lattice];
+		Return[lattice]; 
 	]
 	Clear[GetEwaldCutoffs];
 	GetEwaldCutoffs[k_, s_, alpha_, detG_, eps_] := Module[{p, A1, A2, C1, C2, arg1, arg2, rmaxn, rmaxk,\[Rho], fallback = 8.0},
